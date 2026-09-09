@@ -1,0 +1,17 @@
+local games = {
+    [93978595733734] = "https://raw.githubusercontent.com/AnixlyGood/nyxhub/main/nyxvd.lua",
+}
+
+local currentPlaceID = game.PlaceId
+local currentUniverseID = game.GameId
+
+local scriptURL = games[currentUniverseID] or games[currentPlaceID]
+
+if scriptURL then
+    print("Anixly Hub: Loading script for ID " .. (games[currentUniverseID] and "Universe" or "Place"))
+    loadstring(game:HttpGet(scriptURL))()
+else
+    local msg = "\nGa support gblk map nya!\nPlaceId: " .. tostring(currentPlaceID) .. "\nUniverseId: " .. tostring(currentUniverseID)
+    game.Players.LocalPlayer:Kick(msg)
+    print(msg)
+end
