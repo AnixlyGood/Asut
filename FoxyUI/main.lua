@@ -240,13 +240,11 @@ function Library:CreateWindow(options)
     local topbarLogo = nil
     local logoSize = 32
     local sphIconSize = 26
-    local backgroundImageId = nil
 
     if type(options) == "table" then
         hubName = options.Title or hubName
         subText = options.Subtitle or subText
         subColor = options.SubtitleColor or subColor
-        backgroundImageId = options.BackgroundImage
         
         if options.SphereText ~= nil then
             sphTextToggle = options.SphereText
@@ -275,35 +273,6 @@ function Library:CreateWindow(options)
         ResetOnSpawn = false,
         IgnoreGuiInset = true
     })
-    
-    -- BACKGROUND IMAGE
-    local BackgroundImage = nil
-    local BackgroundOverlay = nil
-    
-    if backgroundImageId then
-        BackgroundImage = Create("ImageLabel", {
-            Parent = ScreenGui,
-            Name = "BackgroundImage",
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            Image = backgroundImageId,
-            ScaleType = Enum.ScaleType.Crop,
-            ImageTransparency = 0,
-            ZIndex = 0
-        })
-        
-        BackgroundOverlay = Create("Frame", {
-            Parent = ScreenGui,
-            Name = "BackgroundOverlay",
-            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-            BackgroundTransparency = 0.7,
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            BorderSizePixel = 0,
-            ZIndex = 1
-        })
-    end
 
     local NotifContainer = Create("Frame", {
         Parent = ScreenGui,
@@ -552,13 +521,6 @@ function Library:CreateWindow(options)
         if MainFrame.Visible then
             Tween(MainFrame, {BackgroundTransparency = val}, 0.3)
             Tween(FloatingBottomBar, {BackgroundTransparency = val > 0 and 0.2 or 0}, 0.3)
-            
-            if BackgroundImage then
-                Tween(BackgroundImage, {ImageTransparency = val}, 0.3)
-            end
-            if BackgroundOverlay then
-                Tween(BackgroundOverlay, {BackgroundTransparency = 0.7 + (val * 0.3)}, 0.3)
-            end
         end
     end
 
