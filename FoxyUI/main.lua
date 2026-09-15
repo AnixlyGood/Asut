@@ -498,14 +498,41 @@ function Library:CreateWindow(options)
     local CloseBtn = Create("TextButton", {Parent = TopBar, Text = "X", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -35, 0, 0)})
     local MinBtn = Create("TextButton", {Parent = TopBar, Text = "—", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -65, 0, 0)})
 
-    local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 160, 1, -40), Position = UDim2.new(0, 0, 0, 40), Active = true})
-    local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -20, 0, 26), Position = UDim2.new(0, 10, 0, 5), Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+    -- SIDEBAR & TAB CONTAINER
+    local Sidebar = Create("Frame", {
+        Parent = MainFrame,
+        BackgroundColor3 = BackgroundColor,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 160, 1, -40),
+        Position = UDim2.new(0, 0, 0, 40),
+        Active = true
+    })
+
+    local TabSearchBox = Create("TextBox", {
+        Parent = Sidebar,
+        BackgroundColor3 = CardColor,
+        Size = UDim2.new(1, -20, 0, 26),
+        Position = UDim2.new(0, 10, 0, 5),
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextColor3 = TextColor,
+        PlaceholderText = "Search tabs...",
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ClearTextOnFocus = false
+    })
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 8)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
     local TabSearchStroke = Create("UIStroke", {Parent = TabSearchBox, Color = Color3.fromRGB(45, 45, 50), Thickness = 1})
     
-    local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -15, 1, -40), Position = UDim2.new(0, 10, 0, 40), ScrollBarThickness = 0})
+    local TabContainer = Create("ScrollingFrame", {
+        Parent = Sidebar,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, -15, 1, -40),
+        Position = UDim2.new(0, 10, 0, 40),
+        ScrollBarThickness = 0
+    })
     Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+    
     local Divider = Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(40, 40, 45), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -40), Position = UDim2.new(0, 160, 0, 40)})
 
     local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -165, 1, -40), Position = UDim2.new(0, 165, 0, 40), Active = true})
@@ -775,7 +802,10 @@ function Library:CreateWindow(options)
         end
     end)
 
-    function Window:CreateTab(tabName, isDefault, isLocked)
+    -- =========================================================
+    -- CREATE TAB (WITH ICON SUPPORT)
+    -- =========================================================
+    function Window:CreateTab(tabName, isDefault, isLocked, icon)
         local isWhitelisted = false
         local player = game:GetService("Players").LocalPlayer
         if player then
@@ -792,7 +822,24 @@ function Library:CreateWindow(options)
         AddBounce(TabBtn, 0.98)
         local Indicator = Create("Frame", {Name = "Indicator", Parent = TabBtn, BackgroundColor3 = isLocked and Color3.fromRGB(255, 215, 0) or AccentColor, Size = UDim2.new(0, 3, 0, 0), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)})
         Create("UICorner", {Parent = Indicator, CornerRadius = UDim.new(1, 0)})
-        local Txt = Create("TextLabel", {Parent = TabBtn, Text = tabName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+        
+        -- ICON SUPPORT FOR TAB
+        local txtOffset = 15
+        if icon then
+            local TabIcon = Create("ImageLabel", {
+                Parent = TabBtn,
+                Name = "TabIcon",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new(0, 12, 0.5, -8),
+                Image = icon,
+                ImageColor3 = SubTextColor,
+                ZIndex = 2
+            })
+            txtOffset = 36
+        end
+        
+        local Txt = Create("TextLabel", {Parent = TabBtn, Text = tabName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, txtOffset, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
 
         if isLocked then
             Create("ImageLabel", {Parent = TabBtn, Image = "rbxassetid://6031082533", ImageColor3 = Color3.fromRGB(255, 215, 0), BackgroundTransparency = 1, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(1, -22, 0.5, -7)})
@@ -818,6 +865,12 @@ function Library:CreateWindow(options)
                 Tween(Window.CurrentTab.Button, {BackgroundTransparency = 1}, 0.2)
                 Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
                 Tween(Window.CurrentTab.Txt, {TextColor3 = SubTextColor}, 0.2)
+                
+                local oldIcon = Window.CurrentTab.Button:FindFirstChild("TabIcon")
+                if oldIcon then
+                    Tween(oldIcon, {ImageColor3 = SubTextColor}, 0.2)
+                end
+                
                 Window.CurrentTab.Content.Visible = false
             end
             
@@ -830,6 +883,11 @@ function Library:CreateWindow(options)
             Tween(TabBtn, {BackgroundTransparency = 0}, 0.2)
             Tween(Indicator, {Size = UDim2.new(0, 3, 0, 18)}, 0.3)
             Tween(Txt, {TextColor3 = TextColor}, 0.2)
+            
+            local currentIcon = TabBtn:FindFirstChild("TabIcon")
+            if currentIcon then
+                Tween(currentIcon, {ImageColor3 = TextColor}, 0.2)
+            end
 
             if #TabConfig.Pages > 0 then
                 local firstPage = TabConfig.Pages[1]
@@ -893,7 +951,10 @@ function Library:CreateWindow(options)
                 PageHighlight.BackgroundTransparency = 0
             end
 
-            function PageObj:CreateSection(sectionName)
+            -- =========================================================
+            -- CREATE SECTION (WITH ICON SUPPORT)
+            -- =========================================================
+            function PageObj:CreateSection(sectionName, icon)
                 local targetColumn = PageObj.Left and LeftColumn or RightColumn
                 PageObj.Left = not PageObj.Left
 
@@ -908,7 +969,23 @@ function Library:CreateWindow(options)
                     SearchIndex = nil 
                 })
                 
-                local Title = Create("TextLabel", {Parent = SectionContainer, Text = sectionName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                -- ICON SUPPORT FOR SECTION
+                local titleOffset = 10
+                if icon then
+                    local SectionIcon = Create("ImageLabel", {
+                        Parent = SectionContainer,
+                        Name = "SectionIcon",
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(0, 14, 0, 14),
+                        Position = UDim2.new(0, 10, 0, 8),
+                        Image = icon,
+                        ImageColor3 = AccentColor,
+                        ZIndex = 2
+                    })
+                    titleOffset = 30
+                end
+                
+                local Title = Create("TextLabel", {Parent = SectionContainer, Text = sectionName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -20 - titleOffset, 0, 30), Position = UDim2.new(0, titleOffset, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
                 local ItemContainer = Create("Frame", {Parent = SectionContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 30), AutomaticSize = Enum.AutomaticSize.Y})
                 local Pad = Create("UIPadding", {Parent = ItemContainer, PaddingBottom = UDim.new(0, 10), PaddingTop = UDim.new(0, 5)})
                 local SList = Create("UIListLayout", {Parent = ItemContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
